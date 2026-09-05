@@ -1,8 +1,6 @@
 """
 Prometheus Operational Metrics Exporter for who-icd11-multilingual-auto-coder.
 """
-import time
-from typing import Dict, Any
 
 class SystemMetricsCollector:
     def __init__(self):

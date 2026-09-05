@@ -3,8 +3,7 @@ Core Algorithmic Engine & Cryptographic / Biological Logic for ICD11-Coder: WHO 
 Domain: Medical Informatics
 Standard: WHO ICD-11 MMS Specification
 """
-import math
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 from .models import FrontierPayload, AgentTelemetryAlert, ExecutionStatus
 
 

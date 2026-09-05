@@ -1,10 +1,9 @@
 """
 FastAPI REST API Server for Who Icd11 Multilingual Auto Coder.
 """
-from typing import Dict, Any, List
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from .base import AuditLogger, PHIGuard
+from .base import AuditLogger
 from .models import SystemTaskPayload, ConsensusDossier
 from .supervisor import SystemSupervisor
 
