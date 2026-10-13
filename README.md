@@ -1,184 +1,72 @@
 # WHO ICD-11 Multilingual Auto Coder
 
-> **Domain:** Clinical & Biomedical AI / Medical Informatics
-> **Standards:** WHO ICD-11 MMS Specification, CAP Synoptic Protocols
+**Status: Experimental threshold-audit demonstrator. Not a clinical ICD-11 coder.**
 
-<div align="center">
+Despite its name, the current repository does **not** retrieve WHO ICD-11 concepts, perform multilingual terminology matching, assign ICD-11 MMS codes, or validate post-coordination. The numeric thresholds are generic software examples, not clinical criteria. Do not use this project for patient care, clinical classification, or billing.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688.svg?logo=fastapi&logoColor=white)
-![Audit Trail](https://img.shields.io/badge/Audit-HMAC--SHA256_Tamper--Evident-brightgreen.svg)
-![Zero-PHI Guard](https://img.shields.io/badge/Guard-Zero--PHI_Outbound-blue.svg)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)
+## Features actually implemented
 
-</div>
+- Three Python rule workers: primary metric > 25, secondary metric > 12 or a critical flag, and selected anomaly terms in a status descriptor. Critical alerts take priority over elevated alerts.
+- A CLI for individual synthetic tasks and CSV batch evaluation, with input/output paths limited to the working directory.
+- A FastAPI service exposing /health, /metrics (JSON counters), /api/audit, /api/chat, and /api/audit/logs.
+- An **in-memory** HMAC-SHA256 chained audit log. It is tamper-evident while running, but entries are lost after restart; supplying the same key does not persist records.
+- A standalone static browser preview at **web/index.html**. It reproduces the simplified threshold rules in JavaScript, exports JSON, and makes no API calls. It does not issue audit signatures.
 
----
+The older icd11_coder/ module has a separate, compatible rule-evaluation CLI but likewise does not contain WHO terminology mapping. The enrichment.py helpers are also generic threshold calculators.
 
-## Overview
+## Install and test
 
-WHO ICD-11 Multilingual Auto Coder is an enterprise-grade distributed component platform for clinical and biomedical AI. It evaluates task payloads through a multi-worker consensus engine, classifies urgency, and maintains a tamper-evident HMAC-SHA256 audit trail. The system enforces zero-PHI outbound interception to comply with HIPAA Safe Harbor de-identification requirements.
+Python 3.9 or later. Create and activate a virtual environment, then:
 
----
-
-## Key Capabilities
-
-- **Multi-Worker Consensus Engine:** Three specialized workers (Invariant QC, Safety Escalation, Protocol Conformance) evaluate each task independently and aggregate into a consensus dossier.
-- **Zero-PHI Outbound Guard:** Regex and pattern-based inspection blocks SSNs, MRNs, phone numbers, emails, and patient identifiers from leaving the system.
-- **HMAC-SHA256 Tamper-Evident Audit Trail:** Cryptographically chained audit log with signature verification for every evaluation and state transition.
-- **FastAPI REST API:** OpenAPI 3.1 endpoints for audit, chat, and metrics.
-- **Prometheus Metrics:** Operational telemetry export.
-- **CLI & Batch Processing:** Command-line interface supporting single evaluations and bulk CSV processing.
-
----
-
-## Installation
-
-```bash
-# Clone the repository
+~~~bash
 git clone https://github.com/abusuraihsakhri/who-icd11-multilingual-auto-coder.git
 cd who-icd11-multilingual-auto-coder
+python -m pip install ".[server,test]"
+python -m pytest -q
+~~~
 
-# Install dependencies
-pip install fastapi uvicorn pydantic pytest
+## Use the CLI
 
-# Optional: Set audit secret key for persistent audit integrity
-export AUDIT_SECRET_KEY="your-secure-random-key-here"
-```
-
----
-
-## Usage
-
-### CLI Commands
-
-#### 1. Single Task Evaluation (Audit)
-```bash
-python cli.py audit --task-id TASK-001 --target TARGET-01 --primary 28.5 --secondary 14.2 --critical --status DISCORDANT
-```
-
-#### 2. Supervisory Chat
-```bash
-python cli.py chat "What is the system status?"
-```
-
-#### 3. Batch CSV Processing
-```bash
+~~~bash
+python cli.py audit --task-id DEMO-01 --target SYNTHETIC --primary 29 --secondary 13
 python cli.py batch -i sample.csv -o results.csv
-```
-
-#### 4. Verify Audit Trail Integrity
-```bash
 python cli.py verify-audit
-```
-
-#### 5. Launch REST API Server
-```bash
 python cli.py serve --host 127.0.0.1 --port 8000
-```
+~~~
 
-### REST API Endpoints
+The installed **who-icd11-audit** command uses this principal CLI. The installed **who-icd11-multilingual-auto-coder** command uses the legacy CLI. These are different evaluation paths, not interchangeable ICD-11 coders.
 
-| Method | Endpoint | Description |
-|:-------|:---------|:------------|
-| GET | `/health` | Health check and system metadata |
-| GET | `/metrics` | Prometheus operational metrics |
-| POST | `/api/audit` | Submit task payload for evaluation |
-| POST | `/api/chat` | Air-gapped supervisory chat query |
-| GET | `/api/audit/logs` | Retrieve and verify HMAC audit trail |
+The API documentation is at http://127.0.0.1:8000/docs after starting the server. For the static preview, open web/index.html or use:
 
-### Example API Request
-```bash
-curl -X POST http://localhost:8000/api/audit \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task_id": "TASK-2026-8801",
-    "target_identifier": "TARGET-PQC-BIO-01",
-    "primary_metric": 32.4,
-    "secondary_metric": 18.2,
-    "status_descriptor": "DISCORDANT_ANOMALY",
-    "is_critical_flag": true
-  }'
-```
+~~~bash
+python -m http.server --directory web 8080
+~~~
 
-### Input Data Schema
+The preview is plain HTML, CSS, and JavaScript. It does not require Python in the browser, Pyodide, or backend infrastructure.
 
-| Field | Type | Description | Requirement |
-|:------|:-----|:------------|:------------|
-| `task_id` | string (max 128 chars) | Unique task/case identifier | Required |
-| `target_identifier` | string (max 128 chars) | Entity or target key | Required |
-| `primary_metric` | float | Primary measurement or score | Required |
-| `secondary_metric` | float | Secondary score (default 0.0) | Optional |
-| `status_descriptor` | string (max 64 chars) | Status code (default "NOMINAL") | Optional |
-| `is_critical_flag` | boolean | Emergency escalation flag (default false) | Optional |
+## Docker
 
----
+Supply a **new random secret** through the environment before starting Compose:
 
-## Testing
+~~~bash
+export AUDIT_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+docker compose up --build
+~~~
 
-```bash
-# Run the full test suite
-pytest -v
+The Compose configuration binds port 8000 to localhost only. To expose this API on a network, set AUDIT_API_KEY as well; /api/audit, /api/chat and /api/audit/logs then require an X-API-Key request header. Configure transport security, authorization, and durable logs separately if deploying outside an isolated development environment. Do not commit actual secret values.
 
-# Run with simulation benchmark
-python simulator.py 1000
-```
+## Privacy and scientific limitations
 
----
+The pattern-based guard detects some obvious email addresses, telephone numbers, MRNs, and similar structured identifiers, but it is not a comprehensive PHI detector and does **not** establish HIPAA Safe Harbor de-identification. Never submit identifiable patient information. The mock supervisory model does not call remote LLM services; all provider choices currently return a deterministic mock.
 
-## Security Features
+The server retains evaluation results and the audit chain in memory. Identifiers appear in returned responses, and the browser preview retains only its current result and counters in page memory. No clinical classification accuracy, cross-language performance, or coding validation has been demonstrated.
 
-- **Zero-PHI Outbound Interceptor:** Blocks MRNs, SSNs, phone numbers, emails, DOBs, and patient names.
-- **HMAC-SHA256 Audit Trail:** Every state transition is cryptographically signed and chained. Use `verify-audit` command or `/api/audit/logs` endpoint to verify integrity.
-- **Path Traversal Protection:** Batch file I/O is restricted to the working directory.
-- **Input Validation:** String fields are bounded to prevent abuse.
-- **Audit Secret Key:** Configure via `AUDIT_SECRET_KEY` environment variable. If not set, an ephemeral key is generated (with a warning) for the session.
+## Development and deployment
 
----
+Run the tests with **python -m pytest -q** and compile checks with **python -m compileall -q agents icd11_coder cli.py enrichment.py simulator.py**. GitHub Actions runs the suite on Python 3.10–3.13.
 
-## Docker Deployment
-
-```bash
-docker build -t who-icd11-multilingual-auto-coder .
-docker run -p 8000:8000 -e AUDIT_SECRET_KEY=your-secure-key who-icd11-multilingual-auto-coder
-```
-
-Or using docker-compose:
-
-```bash
-docker-compose up -d
-```
-
----
-
-## Project Structure
-
-```
-who-icd11-multilingual-auto-coder/
-├── agents/                  # Core distributed component engine
-│   ├── __init__.py
-│   ├── api.py               # FastAPI REST server
-│   ├── base.py              # Security, PHI guard, HMAC audit
-│   ├── models.py            # Pydantic data models
-│   ├── supervisor.py        # Master orchestrator
-│   ├── workers.py           # Specialized evaluation workers
-│   ├── llm_factory.py       # LLM provider adapter
-│   ├── metrics.py           # Prometheus metrics collector
-│   ├── learning.py          # Bayesian calibration engine
-│   └── streamer.py          # WebSocket telemetry broadcaster
-├── icd11_coder/             # Legacy ICD-11 coder module
-├── tests/                   # Pytest test suite
-├── cli.py                   # Primary CLI entry point
-├── simulator.py             # Load testing simulator
-├── enrichment.py            # Threshold-based enrichment engines
-├── pyproject.toml           # Project metadata
-├── Dockerfile               # Container build spec
-└── docker-compose.yml       # Container orchestration
-```
-
----
+The browser preview supports current mainstream browsers with JavaScript enabled. The repository includes a GitHub Pages deployment workflow, but a live application link will be added only after verified publication.
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE).

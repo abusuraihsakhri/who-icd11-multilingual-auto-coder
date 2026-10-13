@@ -1,236 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Who Icd11 Multilingual Auto Coder — Operations Console</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #090d16;
-            --card: #111827;
-            --border: #1f293d;
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.25);
-            --text: #f3f4f6;
-            --text-muted: #9ca3af;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #10b981;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding: 2rem;
-            min-height: 100vh;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .header-title h1 { font-size: 1.6rem; font-weight: 700; color: #fff; }
-        .header-title p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
-        .badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background: var(--accent-glow);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 1.5rem;
-        }
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .card h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem; }
-        input, select, textarea {
-            width: 100%;
-            padding: 0.65rem 0.9rem;
-            background: #0d1322;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 0.9rem;
-        }
-        input:focus, textarea:focus { outline: none; border-color: var(--accent); }
-        .btn {
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            padding: 0.7rem 1.4rem;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            width: 100%;
-        }
-        .btn:hover { background: #2563eb; }
-        .terminal {
-            background: #060911;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: #10b981;
-            height: 380px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-        }
-        .metrics-bar {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .metric-box {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-        }
-        .metric-val { font-size: 1.4rem; font-weight: 700; color: #fff; margin-top: 0.25rem; }
-        .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Threshold audit preview · ICD-11 repository</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#172234;--border:#40516b;--text:#f3f6fb;--muted:#b8c6d7;--accent:#92c4ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1020px;margin:auto;padding:24px 18px 56px}
+h1{font-size:clamp(1.5rem,4vw,2.15rem);line-height:1.2;margin:0}
+h2{font-size:1.12rem;margin:0 0 10px}
+header{border-bottom:1px solid var(--border);padding-bottom:16px}
+p{margin:10px 0}.muted,small{color:var(--muted)}
+.notice{margin:20px 0;padding:14px 17px;border-left:4px solid #ffd18b;background:#282532}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{min-width:0;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px}
+label{display:block;font-size:.88rem;font-weight:650;margin:13px 0 4px}
+input{width:100%;background:#101827;border:1px solid #8292ab;color:var(--text);padding:10px;border-radius:7px;font:inherit}
+input[type=checkbox]{width:auto;margin-right:8px}
+.check{display:flex;align-items:center;font-weight:400}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 12px}
+button{background:#2764ad;border:1px solid var(--accent);color:white;font:inherit;font-weight:650;border-radius:7px;padding:10px 15px;cursor:pointer}
+button.secondary{background:transparent;color:var(--accent)}
+button:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid #ffe394;outline-offset:3px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{padding:10px;background:#101827;border:1px solid var(--border);border-radius:7px}
+.stat b{font-size:1.35rem;display:block}.stat span{font-size:.75rem;color:var(--muted)}
+.status{font-weight:750;font-size:1.02rem;overflow-wrap:anywhere}
+.alert{border-top:1px solid var(--border);padding:9px 0}
+.alert strong{display:block}
+ul{padding-left:21px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}main{padding:14px}.panel{padding:16px}}
+</style>
 </head>
 <body>
-
-    <div class="header">
-        <div class="header-title">
-            <h1>Who Icd11 Multilingual Auto Coder</h1>
-            <p>Domain: Clinical & Cryptographic AI | Standard: CAP / CLSI / NIST Standards | LabMind-Atlas Architecture</p>
-        </div>
-        <div>
-            <span class="badge">Air-Gapped Active</span>
-            <span class="badge" style="background: rgba(16,185,129,0.2); color: #10b981; border-color: #10b981;">Zero-PHI Guard Active</span>
-        </div>
-    </div>
-
-    <div class="metrics-bar">
-        <div class="metric-box">
-            <div class="metric-label">System Status</div>
-            <div class="metric-val" style="color: var(--success);" id="m-status">OPTIMAL</div>
-        </div>
-        <div class="metric-box">
-            <div class="metric-label">Tasks Processed</div>
-            <div class="metric-val" id="m-tasks">142</div>
-        </div>
-        <div class="metric-box">
-            <div class="metric-label">Audit Blocks Signed</div>
-            <div class="metric-val" id="m-audit">142</div>
-        </div>
-        <div class="metric-box">
-            <div class="metric-label">PHI Interceptions</div>
-            <div class="metric-val" style="color: var(--accent);" id="m-phi">0</div>
-        </div>
-    </div>
-
-    <div class="grid">
-        <div class="card">
-            <h2>⚙️ Dispatch Distributed Component Audit</h2>
-            <div class="form-group">
-                <label>Task / Sample ID</label>
-                <input type="text" id="task_id" value="TASK-2026-LIVE-01">
-            </div>
-            <div class="form-group">
-                <label>Target Identifier</label>
-                <input type="text" id="target_id" value="SPECIMEN-ALPHA-77">
-            </div>
-            <div class="form-group">
-                <label>Primary Measurement / Value</label>
-                <input type="number" id="primary_metric" value="29.4" step="0.1">
-            </div>
-            <div class="form-group">
-                <label>Secondary Metric / Kinetic Index</label>
-                <input type="number" id="secondary_metric" value="14.8" step="0.1">
-            </div>
-            <div class="form-group">
-                <label>Status / Phenotype Descriptor</label>
-                <input type="text" id="status_descriptor" value="DISCORDANT_ANOMALY">
-            </div>
-            <div class="form-group">
-                <label><input type="checkbox" id="is_critical" checked> Trigger Emergency / Critical Flag</label>
-            </div>
-            <button class="btn" onclick="runAudit()">Execute Distributed Component Audit</button>
-        </div>
-
-        <div class="card">
-            <h2>📊 Real-Time Consensus Dossier & Audit Log</h2>
-            <div class="terminal" id="outputConsole">// Who Icd11 Multilingual Auto Coder Operations Console Ready
-// Connection established with Air-Gapped Supervisor
-// Cryptographic HMAC-SHA256 audit ledger loaded.
-// Ready for live task payload dispatch...</div>
-        </div>
-    </div>
-
-    <script>
-        async function runAudit() {
-            const consoleEl = document.getElementById('outputConsole');
-            consoleEl.innerText = "// Dispatching task across specialized workers...
-// Invoking InvariantQCWorker, SafetyEscalationWorker, ProtocolWorker...";
-
-            const payload = {
-                task_id: document.getElementById('task_id').value,
-                target_identifier: document.getElementById('target_id').value,
-                primary_metric: parseFloat(document.getElementById('primary_metric').value),
-                secondary_metric: parseFloat(document.getElementById('secondary_metric').value),
-                status_descriptor: document.getElementById('status_descriptor').value,
-                is_critical_flag: document.getElementById('is_critical').checked
-            };
-
-            try {
-                const res = await fetch('/api/audit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                consoleEl.innerText = JSON.stringify(data, null, 2);
-                document.getElementById('m-tasks').innerText = parseInt(document.getElementById('m-tasks').innerText) + 1;
-                document.getElementById('m-audit').innerText = parseInt(document.getElementById('m-audit').innerText) + 1;
-            } catch (err) {
-                consoleEl.innerText = "// Offline / Simulation Output:\n" + JSON.stringify({
-                    dossier_id: "DOSSIER-SIM-" + Math.floor(Math.random()*10000),
-                    system: "who-icd11-multilingual-auto-coder",
-                    domain: "Clinical & Cryptographic AI",
-                    task_id: payload.task_id,
-                    overall_urgency: payload.is_critical_flag ? "CRITICAL_STAT_PANIC" : "ELEVATED_RISK",
-                    integrity_status: "DISCORDANT_ANOMALY",
-                    alerts: [
-                        { worker: "InvariantQCWorker", alert: "Primary metric exceeds upper reference bound" },
-                        { worker: "SafetyEscalationWorker", alert: "Critical emergency interlock flag active" }
-                    ],
-                    audit_hash: "HMAC_SHA256_e83f9a72b941d6c381f9"
-                }, null, 2);
-            }
-        }
-    </script>
+<main>
+<header><h1>Threshold audit preview</h1><p class="muted">WHO ICD-11 Multilingual Auto Coder repository · Standalone browser demonstrator</p></header>
+<p class="notice"><strong>Not an ICD-11 coding system.</strong> The repository currently contains no WHO ICD-11 terminology database, multilingual matching, or post-coordination. Its generic software thresholds are not clinical criteria. Do not use this page for diagnosis, coding, billing, or identifiable patient data.</p>
+<div class="grid">
+<section class="panel" aria-labelledby="form-title">
+<h2 id="form-title">Evaluate synthetic parameters</h2>
+<form id="form">
+<label for="task">Task ID</label><input id="task" maxlength="128" value="DEMO-001" required autocomplete="off">
+<label for="target">Target identifier (synthetic)</label><input id="target" maxlength="128" value="SAMPLE-01" required autocomplete="off">
+<label for="primary">Primary metric</label><input id="primary" type="number" step="any" value="29.4" required>
+<label for="secondary">Secondary metric</label><input id="secondary" type="number" step="any" value="14.8" required>
+<label for="descriptor">Status descriptor</label><input id="descriptor" maxlength="64" value="DISCORDANT_ANOMALY" required autocomplete="off">
+<label for="critical" class="check"><input id="critical" type="checkbox" checked>Critical flag</label>
+<div class="actions"><button type="submit">Evaluate rules</button><button type="reset" class="secondary">Reset</button></div>
+</form>
+<small>Calculations run locally in your browser. No network requests, analytics, or persistent storage.</small>
+</section>
+<section class="panel" aria-labelledby="result-title">
+<h2 id="result-title">Rule evaluation</h2>
+<div class="stats" aria-label="Current session counts">
+<div class="stat"><b id="processed">0</b><span>Evaluations this session</span></div>
+<div class="stat"><b id="flagged">0</b><span>Evaluations with alerts</span></div>
+</div>
+<div id="result" aria-live="polite"><p class="muted">Run an evaluation to see the results.</p></div>
+<div class="actions"><button type="button" id="export" class="secondary" disabled>Export result (JSON)</button></div>
+</section>
+</div>
+<section class="panel" style="margin-top:16px">
+<h2>Implemented software rules</h2>
+<ul>
+<li>Primary metric above 25: elevated.</li>
+<li>Secondary metric above 12: elevated; critical flag: critical.</li>
+<li>Descriptor containing DISCORDANT, ANOMALY, MUTANT, VIOLATION, FAIL, or REJECT: elevated.</li>
+<li>Critical urgency takes precedence over elevated urgency.</li>
+</ul>
+<p class="muted">These are test thresholds only. The Python service includes an in-memory HMAC audit trail; the browser preview does not issue audit signatures or assign any ICD-11 codes.</p>
+</section>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const flags=["DISCORDANT","ANOMALY","MUTANT","VIOLATION","FAIL","REJECT"];
+let last=null,processed=0,flagged=0;
+$("form").addEventListener("submit",event=>{
+ event.preventDefault();
+ const task=$("task").value.trim(),target=$("target").value.trim(),descriptor=$("descriptor").value.trim();
+ const pRaw=$("primary").value.trim(),sRaw=$("secondary").value.trim(),p=Number(pRaw),s=Number(sRaw);
+ const el=$("result");
+ if(!task||!target||!descriptor||!pRaw||!sRaw||!Number.isFinite(p)||!Number.isFinite(s)){
+   el.textContent="Enter nonempty identifiers, a descriptor, and finite numeric metrics.";return;
+ }
+ const alerts=[];
+ if(p>25) alerts.push({worker:"InvariantQCWorker",urgency:"ELEVATED_RISK",summary:"Primary metric above 25"});
+ if($("critical").checked||s>12) alerts.push({worker:"SafetyEscalationWorker",urgency:$("critical").checked?"CRITICAL_STAT_PANIC":"ELEVATED_RISK",summary:$("critical").checked?"Critical flag set":"Secondary metric above 12"});
+ if(flags.some(v=>descriptor.toUpperCase().includes(v))) alerts.push({worker:"ProtocolConformanceWorker",urgency:"ELEVATED_RISK",summary:"Descriptor flagged"});
+ const critical=alerts.some(a=>a.urgency==="CRITICAL_STAT_PANIC");
+ const urgency=critical?"CRITICAL_STAT_PANIC":alerts.length?"ELEVATED_RISK":"ROUTINE";
+ const integrity=critical?"RECALIBRATION_REQUIRED":alerts.length?"DISCORDANT_ANOMALY":"VALIDATED_OPTIMAL";
+ last={type:"LOCAL_THRESHOLD_PREVIEW_NOT_ICD11_CODING",task_id:task,target_identifier:target,
+ primary_metric:p,secondary_metric:s,status_descriptor:descriptor,is_critical_flag:$("critical").checked,
+ overall_urgency:urgency,integrity_status:integrity,total_alerts:alerts.length,
+ critical_alerts_count:alerts.filter(a=>a.urgency==="CRITICAL_STAT_PANIC").length,alerts};
+ $("processed").textContent=String(++processed);
+ if(alerts.length)$("flagged").textContent=String(++flagged);
+ el.replaceChildren();
+ const state=document.createElement("p");state.className="status";state.textContent=urgency+" / "+integrity;el.append(state);
+ const summary=document.createElement("p");summary.textContent=alerts.length+" alert(s). No ICD-11 codes assigned.";el.append(summary);
+ for(const alert of alerts){
+   const row=document.createElement("div"),title=document.createElement("strong"),detail=document.createElement("span");
+   row.className="alert";title.textContent=alert.worker+" ("+alert.urgency+")";detail.textContent=alert.summary;row.append(title,detail);el.append(row);
+ }
+ $("export").disabled=false;
+});
+$("form").addEventListener("reset",()=>{last=null;$("result").textContent="Form reset. Session counts unchanged.";$("export").disabled=true;});
+$("export").addEventListener("click",()=>{
+ if(!last)return;
+ const url=URL.createObjectURL(new Blob([JSON.stringify(last,null,2)],{type:"application/json"}));
+ const a=document.createElement("a");a.href=url;a.download="threshold-audit-preview.json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+</script>
 </body>
 </html>
