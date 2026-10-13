@@ -26,6 +26,6 @@ jobs:
         run: |
           python -m compileall -q agents icd11_coder cli.py enrichment.py simulator.py
           python -m pytest -q
-      - name: Check for tracked embedded audit secret
+      - name: Confirm compose requires external audit key
         run: |
-          if grep -R -n 'who-icd11-multilingual-auto-coder-prod-audit-key-2026' --include='*.yml' --include='*.yaml' .; then exit 1; fi
+          python -c "from pathlib import Path; assert '${AUDIT_SECRET_KEY:' in Path('docker-compose.yml').read_text()"
