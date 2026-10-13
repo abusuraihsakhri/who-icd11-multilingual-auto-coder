@@ -17,13 +17,13 @@ def _safe_resolve_path(path_str: str, must_exist: bool = False) -> Path:
     """Resolve a user-supplied path safely, preventing path traversal outside cwd."""
     cwd = Path.cwd().resolve()
     p = Path(path_str).resolve()
-    if must_exist and not p.exists():
-        raise FileNotFoundError(f"Input file not found: {path_str}")
     # Prevent path traversal: resolved path must be within cwd or its subdirectories
     try:
         p.relative_to(cwd)
     except ValueError:
         raise ValueError(f"Path '{path_str}' resolves outside the working directory (path traversal blocked)")
+    if must_exist and not p.is_file():
+        raise FileNotFoundError(f"Input file not found: {path_str}")
     return p
 
 
@@ -98,6 +98,8 @@ def main(argv=None):
         try:
             in_path = _safe_resolve_path(args.input, must_exist=True)
             out_path = _safe_resolve_path(args.output)
+            if in_path == out_path:
+                raise ValueError("Input and output must be different files")
         except (FileNotFoundError, ValueError) as e:
             print(f"Error: {e}", file=sys.stderr)
             return 1
@@ -106,12 +108,14 @@ def main(argv=None):
             with open(in_path, mode="r", encoding="utf-8-sig") as f:
                 reader = csv.DictReader(f)
                 fieldnames = list(reader.fieldnames or [])
+                if not reader.fieldnames or not {"task_id", "target_identifier", "primary_metric"}.issubset(reader.fieldnames):
+                    raise ValueError("CSV must contain task_id, target_identifier, primary_metric")
                 rows = list(reader)
         except Exception as e:
             print(f"Error reading input file: {e}", file=sys.stderr)
             return 1
 
-        out_fields = fieldnames + ["overall_urgency", "integrity_status", "total_alerts", "audit_hash"]
+        out_fields = list(dict.fromkeys(fieldnames + ["overall_urgency", "integrity_status", "total_alerts", "audit_hash"]))
         out_rows = []
         errors = 0
         for idx, r in enumerate(rows):
@@ -145,7 +149,7 @@ def main(argv=None):
             return 1
 
         print(f"Processed {len(out_rows)} records -> {out_path}" + (f" ({errors} errors)" if errors else ""))
-        return 0
+        return 1 if errors else 0
 
     if args.command == "serve":
         import uvicorn
