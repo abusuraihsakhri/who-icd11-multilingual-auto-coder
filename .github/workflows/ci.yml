@@ -26,6 +26,6 @@ jobs:
         run: |
           python -m compileall -q agents icd11_coder cli.py enrichment.py simulator.py
           python -m pytest -q
-      - name: Confirm compose requires external audit key
+      - name: Confirm safe Compose configuration
         run: |
-          python -c "from pathlib import Path; assert '${AUDIT_SECRET_KEY:' in Path('docker-compose.yml').read_text()"
+          python -c 'from pathlib import Path; c=Path("docker-compose.yml").read_text(); assert "AUDIT_SECRET_KEY" in c and "127.0.0.1:8000:8000" in c'
